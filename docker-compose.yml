@@ -5,13 +5,15 @@ services:
       - "8000:8000"
     environment:
       - DATABASE_URL=postgresql://health_user:health_pass@db:5432/health_db
-      - WEBHOOK_TOKEN=replace_this_with_a_secure_token
+      - WEBHOOK_TOKEN=${WEBHOOK_TOKEN}
     depends_on:
       db:
         condition: service_healthy
+    restart: unless-stopped
 
   db:
     image: postgres:15-alpine
+    container_name: health-buddy-db
     environment:
       - POSTGRES_USER=health_user
       - POSTGRES_PASSWORD=health_pass
@@ -19,30 +21,31 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U health_user -d health_db"]
       interval: 5s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
 
   grafana:
     image: grafana/grafana-oss:latest
+    container_name: health-buddy-grafana
     ports:
       - "3000:3000"
     volumes:
-      - grafana_data:/var/lib/grafana
+      - ./grafana_data:/var/lib/grafana
     depends_on:
       - db
+    restart: unless-stopped
 
   tunnel:
     image: cloudflare/cloudflared:latest
+    container_name: health-buddy-tunnel
     command: tunnel --no-autoupdate run
     environment:
       - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
     depends_on:
       - app
-
-volumes:
-  postgres_data:
-  grafana_data:
+    restart: unless-stopped
