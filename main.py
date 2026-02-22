@@ -19,6 +19,7 @@ webhook_token = os.getenv("WEBHOOK_TOKEN", "super-secret-token")
 api_key_query = APIKeyQuery(name=API_KEY_NAME, auto_error=False)
 
 async def get_api_key(api_key: str = Depends(api_key_query)):
+    logger.info(f"Checking token. Received: {api_key}, Expected: {webhook_token}")
     if api_key == webhook_token:
         return api_key
     raise HTTPException(status_code=403, detail="Invalid token.")
