@@ -6,6 +6,7 @@ from fastapi import FastAPI, HTTPException, Security, Depends, BackgroundTasks
 from fastapi.security.api_key import APIKeyQuery, APIKey
 from pydantic import BaseModel
 from database import SessionLocal, HealthMetric, init_db
+from insight_engine import generate_insight, send_to_discord
 
 # 初始化数据库
 init_db()
@@ -79,6 +80,18 @@ async def health_webhook(
     # 使用 BackgroundTasks 异步处理，防止 Webhook 超时
     background_tasks.add_task(process_health_data, payload)
     return {"status": "accepted", "message": "Processing in background"}
+
+@app.post("/api/health/analyze")
+async def trigger_analysis(background_tasks: BackgroundTasks, token: APIKey = Depends(get_api_key)):
+    """
+    手动触发 AI 分析并发送到 Discord
+    """
+    def run_and_send():
+        content = generate_insight()
+        send_to_discord(content)
+        
+    background_tasks.add_task(run_and_send)
+    return {"status": "analysis_started"}
 
 if __name__ == "__main__":
     import uvicorn
