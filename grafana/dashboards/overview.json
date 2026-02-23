@@ -107,7 +107,7 @@
           "format": "time_series",
           "rawQuery": true,
           "refId": "A",
-          "sql": "SELECT date_trunc('day', timestamp) AS \"time\", SUM(value) AS \"steps\" FROM health_metrics WHERE metric_type = 'step_count' GROUP BY 1 ORDER BY 1"
+          "sql": "SELECT date_trunc('day', timestamp AT TIME ZONE 'UTC' AT TIME ZONE 'PST') AS \"time\", SUM(value) AS \"steps\" FROM health_metrics WHERE metric_type = 'step_count' GROUP BY 1 ORDER BY 1"
         }
       ],
       "title": "Daily Steps (Aggregated)",
