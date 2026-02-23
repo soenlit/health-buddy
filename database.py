@@ -1,9 +1,14 @@
+import os
 from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, JSON, UniqueConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-import os
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://health_user:health_pass@db:5432/health_db")
+# 自动处理本地和容器内的连接地址
+raw_db_url = os.getenv("DATABASE_URL", "postgresql://health_user:health_pass@db:5432/health_db")
+if os.getenv("IS_LOCAL_DEV") == "true":
+    DATABASE_URL = raw_db_url.replace("@db:", "@localhost:")
+else:
+    DATABASE_URL = raw_db_url
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
