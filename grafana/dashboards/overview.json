@@ -23,7 +23,7 @@
     {
       "datasource": {
         "type": "postgres",
-        "uid": "${DS_POSTGRESQL}"
+        "uid": "PostgreSQL"
       },
       "fieldConfig": {
         "defaults": {
@@ -77,7 +77,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 9,
         "w": 24,
         "x": 0,
         "y": 0
@@ -102,157 +102,22 @@
         {
           "datasource": {
             "type": "postgres",
-            "uid": "${DS_POSTGRESQL}"
+            "uid": "PostgreSQL"
           },
           "format": "time_series",
           "rawQuery": true,
           "refId": "A",
-          "sql": "SELECT date_trunc('day', timestamp AT TIME ZONE 'UTC' AT TIME ZONE 'PST') AS \"time\", SUM(value) AS \"steps\" FROM health_metrics WHERE metric_type = 'step_count' GROUP BY 1 ORDER BY 1"
+          "sql": "SELECT $__timeGroupAlias(timestamp, 24h), sum(value) AS \"steps\" FROM health_metrics WHERE metric_type = 'step_count' GROUP BY 1 ORDER BY 1"
         }
       ],
-      "title": "Daily Steps (Aggregated)",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "postgres",
-        "uid": "${DS_POSTGRESQL}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "decibel"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 8
-      },
-      "id": 2,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "postgres",
-            "uid": "${DS_POSTGRESQL}"
-          },
-          "format": "time_series",
-          "rawQuery": true,
-          "refId": "A",
-          "sql": "SELECT timestamp AS \"time\", value FROM health_metrics WHERE metric_type = 'environmental_audio_exposure' ORDER BY 1"
-        }
-      ],
-      "title": "Environmental Audio Exposure",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "postgres",
-        "uid": "${DS_POSTGRESQL}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 8
-      },
-      "id": 3,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "postgres",
-            "uid": "${DS_POSTGRESQL}"
-          },
-          "format": "time_series",
-          "rawQuery": true,
-          "refId": "A",
-          "sql": "SELECT timestamp AS \"time\", value FROM health_metrics WHERE metric_type = 'flights_climbed' ORDER BY 1"
-        }
-      ],
-      "title": "Flights Climbed",
+      "title": "Daily Steps",
       "type": "timeseries"
     }
   ],
   "schemaVersion": 39,
   "tags": [],
   "templating": {
-    "list": [
-      {
-        "current": {
-          "selected": false,
-          "text": "PostgreSQL",
-          "value": "PostgreSQL"
-        },
-        "hide": 0,
-        "includeAll": false,
-        "label": "Datasource",
-        "multi": false,
-        "name": "DS_POSTGRESQL",
-        "options": [],
-        "query": "postgres",
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "type": "datasource"
-      }
-    ]
+    "list": []
   },
   "time": {
     "from": "now-30d",
@@ -261,6 +126,6 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "Health Buddy Overview",
-  "uid": "hb_overview",
-  "version": 2
+  "uid": "hb_overview_v2",
+  "version": 1
 }
