@@ -16,8 +16,10 @@ services:
       - POSTGRES_USER=health_user
       - POSTGRES_PASSWORD=health_pass
       - POSTGRES_DB=health_db
+    ports:
+      - "5432:5432"
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U health_user -d health_db" ]
       interval: 5s
@@ -31,9 +33,9 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./grafana_data:/var/lib/grafana
+      - grafana_data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning
-      - ./grafana/dashboards:/etc/grafana/dashboards
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
     depends_on:
       - db
     restart: unless-stopped
@@ -74,3 +76,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     restart: unless-stopped
+
+volumes:
+  postgres_data:
+  grafana_data:

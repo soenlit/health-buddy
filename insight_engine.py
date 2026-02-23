@@ -16,21 +16,40 @@ def get_recent_stats(days=7):
     db = SessionLocal()
     try:
         since = datetime.now() - timedelta(days=days)
-        # 聚合过去几天的核心数据
-        stats = db.query(
-            HealthMetric.metric_type,
-            func.avg(HealthMetric.value).label('avg_val'),
-            func.max(HealthMetric.value).label('max_val'),
-            func.min(HealthMetric.value).label('min_val')
-        ).filter(HealthMetric.timestamp >= since).group_by(HealthMetric.metric_type).all()
+        
+        # 针对步数、距离等累加型指标，先进行按天求和，再算平均
+        # 针对心率等指标，算日均波动
+        metrics_to_sum = ['step_count', 'walking_running_distance', 'flights_climbed', 'active_energy']
         
         result = {}
-        for s in stats:
-            result[s.metric_type] = {
-                "avg": round(float(s.avg_val), 2),
-                "max": float(s.max_val),
-                "min": float(s.min_val)
-            }
+        for m_type in metrics_to_sum:
+            daily_sums = db.query(
+                func.date_trunc('day', HealthMetric.timestamp).label('day'),
+                func.sum(HealthMetric.value).label('daily_val')
+            ).filter(
+                HealthMetric.metric_type == m_type,
+                HealthMetric.timestamp >= since
+            ).group_by('day').all()
+            
+            if daily_sums:
+                vals = [float(d.daily_val) for d in daily_sums]
+                result[m_type] = {
+                    "daily_avg": round(sum(vals) / len(vals), 2),
+                    "weekly_total": round(sum(vals), 2),
+                    "max_day": max(vals)
+                }
+        
+        # 针对心率这种不需要求和的，保持原样或取日均值
+        hr_stats = db.query(
+            func.avg(HealthMetric.value).label('avg_val')
+        ).filter(
+            HealthMetric.metric_type == 'heart_rate',
+            HealthMetric.timestamp >= since
+        ).first()
+        
+        if hr_stats and hr_stats.avg_val:
+            result['heart_rate'] = {"avg": round(float(hr_stats.avg_val), 2)}
+            
         return result
     finally:
         db.close()
@@ -45,7 +64,7 @@ def generate_insight():
         return "还没攒够数据，再运动两天吧。"
 
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    model = genai.GenerativeModel('gemini-3-flash-preview')
     
     prompt = f"""
     你是一个毒舌但专业的健康助手 Bobo。以下是用户最近 7 天的健康数据：
