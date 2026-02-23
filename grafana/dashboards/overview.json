@@ -23,7 +23,7 @@
     {
       "datasource": {
         "type": "postgres",
-        "uid": "PostgreSQL"
+        "uid": "${DS_POSTGRESQL}"
       },
       "fieldConfig": {
         "defaults": {
@@ -78,7 +78,7 @@
       },
       "gridPos": {
         "h": 9,
-        "w": 24,
+        "w": 12,
         "x": 0,
         "y": 0
       },
@@ -102,7 +102,7 @@
         {
           "datasource": {
             "type": "postgres",
-            "uid": "PostgreSQL"
+            "uid": "${DS_POSTGRESQL}"
           },
           "format": "time_series",
           "rawQuery": true,
@@ -117,7 +117,26 @@
   "schemaVersion": 39,
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "PostgreSQL",
+          "value": "PostgreSQL"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Datasource",
+        "multi": false,
+        "name": "DS_POSTGRESQL",
+        "options": [],
+        "query": "postgres",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      }
+    ]
   },
   "time": {
     "from": "now-30d",
@@ -126,6 +145,6 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "Health Buddy Overview",
-  "uid": "hb_overview_v2",
+  "uid": "hb_overview_final",
   "version": 1
 }
