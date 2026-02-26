@@ -53,7 +53,8 @@ services:
   cron:
     image: ghcr.io/soenlit/health-buddy:latest
     container_name: health-buddy-cron
-    command: ["uv", "run", "scheduler.py"]
+    # Keep the container running indefinitely so Ofelia can execute `uv run scheduler.py` inside it
+    command: [ "tail", "-f", "/dev/null" ]
     environment:
       - DATABASE_URL=postgresql://health_user:health_pass@db:5432/health_db
       - GEMINI_API_KEY=${GEMINI_API_KEY}
