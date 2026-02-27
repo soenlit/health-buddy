@@ -64,7 +64,7 @@ def generate_insight():
         return "还没攒够数据，再运动两天吧。"
 
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-3-pro-preview')
+    model = genai.GenerativeModel('gemini-3.1-pro-preview')
     
     prompt = f"""
     你是一个毒舌但专业的健康助手 Bobo。以下是用户最近 7 天的健康数据：
