@@ -1,5 +1,5 @@
 import os
-import google.generativeai as genai
+from google import genai
 from sqlalchemy import func
 from database import SessionLocal, HealthMetric
 from datetime import datetime, timedelta
@@ -63,8 +63,7 @@ def generate_insight():
     if not stats:
         return "还没攒够数据，再运动两天吧。"
 
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-3.1-pro-preview')
+    client = genai.Client(api_key=api_key)
     
     prompt = f"""
     你是一个毒舌但专业的健康助手 Bobo。以下是用户最近 7 天的健康数据：
@@ -78,7 +77,10 @@ def generate_insight():
     """
     
     try:
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model='gemini-3.1-pro-preview',
+            contents=prompt
+        )
         return response.text
     except Exception as e:
         logger.error(f"Gemini error: {e}")
