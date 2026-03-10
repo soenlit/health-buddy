@@ -78,7 +78,7 @@ def generate_insight():
     
     try:
         response = client.models.generate_content(
-            model='gemini-3.1-pro-preview',
+            model='gemini-2.0-flash',
             contents=prompt
         )
         return response.text
