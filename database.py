@@ -1,6 +1,6 @@
 import os
 from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, JSON, UniqueConstraint
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # 自动处理本地和容器内的连接地址
