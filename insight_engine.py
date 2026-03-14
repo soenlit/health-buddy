@@ -178,6 +178,7 @@ def generate_insight():
     5. 最后给出下周一条硬核、可执行的建议。
     """
 
+    logger.info(f"Insight prompt:\n{prompt}")
     try:
         response = client.models.generate_content(
             model='gemini-3.1-pro-preview',
