@@ -82,22 +82,40 @@ def process_health_data(payload: Dict[str, Any]):
 
             heart_rate_zones = w.get("heartRateZones") or {}
 
-            workout_entry = Workout(
-                start_timestamp=start_ts,
-                end_timestamp=end_ts,
-                workout_type=w.get("name") or w.get("workoutActivityType", "Unknown"),
-                duration_minutes=duration_minutes,
-                active_calories=w.get("activeEnergy") or w.get("activeEnergyBurned"),
-                avg_heart_rate=w.get("avgHeartRate"),
-                max_heart_rate=w.get("maxHeartRate"),
-                hr_zone1_seconds=heart_rate_zones.get("zone1"),
-                hr_zone2_seconds=heart_rate_zones.get("zone2"),
-                hr_zone3_seconds=heart_rate_zones.get("zone3"),
-                hr_zone4_seconds=heart_rate_zones.get("zone4"),
-                hr_zone5_seconds=heart_rate_zones.get("zone5"),
-                raw_data=w
-            )
-            db.merge(workout_entry)
+            workout_type = w.get("name") or w.get("workoutActivityType", "Unknown")
+            existing = db.query(Workout).filter(
+                Workout.start_timestamp == start_ts,
+                Workout.workout_type == workout_type
+            ).first()
+
+            if existing:
+                existing.end_timestamp = end_ts
+                existing.duration_minutes = duration_minutes
+                existing.active_calories = w.get("activeEnergy") or w.get("activeEnergyBurned")
+                existing.avg_heart_rate = w.get("avgHeartRate")
+                existing.max_heart_rate = w.get("maxHeartRate")
+                existing.hr_zone1_seconds = heart_rate_zones.get("zone1")
+                existing.hr_zone2_seconds = heart_rate_zones.get("zone2")
+                existing.hr_zone3_seconds = heart_rate_zones.get("zone3")
+                existing.hr_zone4_seconds = heart_rate_zones.get("zone4")
+                existing.hr_zone5_seconds = heart_rate_zones.get("zone5")
+                existing.raw_data = w
+            else:
+                db.add(Workout(
+                    start_timestamp=start_ts,
+                    end_timestamp=end_ts,
+                    workout_type=workout_type,
+                    duration_minutes=duration_minutes,
+                    active_calories=w.get("activeEnergy") or w.get("activeEnergyBurned"),
+                    avg_heart_rate=w.get("avgHeartRate"),
+                    max_heart_rate=w.get("maxHeartRate"),
+                    hr_zone1_seconds=heart_rate_zones.get("zone1"),
+                    hr_zone2_seconds=heart_rate_zones.get("zone2"),
+                    hr_zone3_seconds=heart_rate_zones.get("zone3"),
+                    hr_zone4_seconds=heart_rate_zones.get("zone4"),
+                    hr_zone5_seconds=heart_rate_zones.get("zone5"),
+                    raw_data=w
+                ))
             workout_count += 1
 
         db.commit()
