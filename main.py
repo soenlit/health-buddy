@@ -84,8 +84,8 @@ def process_health_data(payload: Dict[str, Any]):
             active_calories = active_cal_raw.get("qty") if isinstance(active_cal_raw, dict) else None
 
             hr = w.get("heartRate") or {}
-            avg_heart_rate = hr.get("avg")
-            max_heart_rate = hr.get("max")
+            avg_heart_rate = hr.get("avg", {}).get("qty")
+            max_heart_rate = hr.get("max", {}).get("qty")
 
             workout_type = w.get("name", "Unknown")
             existing = db.query(Workout).filter(
