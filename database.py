@@ -28,5 +28,22 @@ class HealthMetric(Base):
     # 防止重复导入同一时间点的同一指标
     __table_args__ = (UniqueConstraint('timestamp', 'metric_type', name='_timestamp_metric_uc'),)
 
+
+class Workout(Base):
+    __tablename__ = "workouts"
+
+    id = Column(Integer, primary_key=True, index=True)
+    start_timestamp = Column(DateTime, index=True)
+    end_timestamp = Column(DateTime)
+    workout_type = Column(String, index=True)  # e.g. "Traditional Strength Training", "Running"
+    duration_minutes = Column(Float)
+    active_calories = Column(Float)
+    avg_heart_rate = Column(Float)
+    max_heart_rate = Column(Float)
+    raw_data = Column(JSON)
+
+    __table_args__ = (UniqueConstraint('start_timestamp', 'workout_type', name='_workout_start_type_uc'),)
+
+
 def init_db():
     Base.metadata.create_all(bind=engine)
