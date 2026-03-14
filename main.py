@@ -80,9 +80,14 @@ def process_health_data(payload: Dict[str, Any]):
                 # Health Auto Export sends duration in seconds
                 duration_minutes = round(float(duration_raw) / 60, 2)
 
-            heart_rate_zones = w.get("heartRateZones") or {}
+            active_cal_raw = w.get("activeEnergyBurned") or w.get("totalEnergy")
+            active_calories = active_cal_raw.get("qty") if isinstance(active_cal_raw, dict) else None
 
-            workout_type = w.get("name") or w.get("workoutActivityType", "Unknown")
+            hr = w.get("heartRate") or {}
+            avg_heart_rate = hr.get("avg")
+            max_heart_rate = hr.get("max")
+
+            workout_type = w.get("name", "Unknown")
             existing = db.query(Workout).filter(
                 Workout.start_timestamp == start_ts,
                 Workout.workout_type == workout_type
@@ -91,14 +96,9 @@ def process_health_data(payload: Dict[str, Any]):
             if existing:
                 existing.end_timestamp = end_ts
                 existing.duration_minutes = duration_minutes
-                existing.active_calories = w.get("activeEnergy") or w.get("activeEnergyBurned")
-                existing.avg_heart_rate = w.get("avgHeartRate")
-                existing.max_heart_rate = w.get("maxHeartRate")
-                existing.hr_zone1_seconds = heart_rate_zones.get("zone1")
-                existing.hr_zone2_seconds = heart_rate_zones.get("zone2")
-                existing.hr_zone3_seconds = heart_rate_zones.get("zone3")
-                existing.hr_zone4_seconds = heart_rate_zones.get("zone4")
-                existing.hr_zone5_seconds = heart_rate_zones.get("zone5")
+                existing.active_calories = active_calories
+                existing.avg_heart_rate = avg_heart_rate
+                existing.max_heart_rate = max_heart_rate
                 existing.raw_data = w
             else:
                 db.add(Workout(
@@ -106,14 +106,9 @@ def process_health_data(payload: Dict[str, Any]):
                     end_timestamp=end_ts,
                     workout_type=workout_type,
                     duration_minutes=duration_minutes,
-                    active_calories=w.get("activeEnergy") or w.get("activeEnergyBurned"),
-                    avg_heart_rate=w.get("avgHeartRate"),
-                    max_heart_rate=w.get("maxHeartRate"),
-                    hr_zone1_seconds=heart_rate_zones.get("zone1"),
-                    hr_zone2_seconds=heart_rate_zones.get("zone2"),
-                    hr_zone3_seconds=heart_rate_zones.get("zone3"),
-                    hr_zone4_seconds=heart_rate_zones.get("zone4"),
-                    hr_zone5_seconds=heart_rate_zones.get("zone5"),
+                    active_calories=active_calories,
+                    avg_heart_rate=avg_heart_rate,
+                    max_heart_rate=max_heart_rate,
                     raw_data=w
                 ))
             workout_count += 1

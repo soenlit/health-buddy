@@ -115,20 +115,6 @@ def get_workout_stats(days=7):
                 "avg_heart_rate": w.avg_heart_rate,
                 "max_heart_rate": w.max_heart_rate,
             }
-            # Include heart rate zone breakdown if available
-            zones = {}
-            if w.hr_zone1_seconds:
-                zones["zone1_easy_sec"] = w.hr_zone1_seconds
-            if w.hr_zone2_seconds:
-                zones["zone2_moderate_sec"] = w.hr_zone2_seconds
-            if w.hr_zone3_seconds:
-                zones["zone3_aerobic_sec"] = w.hr_zone3_seconds
-            if w.hr_zone4_seconds:
-                zones["zone4_threshold_sec"] = w.hr_zone4_seconds
-            if w.hr_zone5_seconds:
-                zones["zone5_max_sec"] = w.hr_zone5_seconds
-            if zones:
-                entry["heart_rate_zones"] = zones
             workout_list.append(entry)
 
         # Aggregate summary

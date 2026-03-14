@@ -40,12 +40,6 @@ class Workout(Base):
     active_calories = Column(Float)
     avg_heart_rate = Column(Float)
     max_heart_rate = Column(Float)
-    # Heart rate zone durations in seconds
-    hr_zone1_seconds = Column(Float)  # < 50% max HR
-    hr_zone2_seconds = Column(Float)  # 50-60%
-    hr_zone3_seconds = Column(Float)  # 60-70%
-    hr_zone4_seconds = Column(Float)  # 70-80%
-    hr_zone5_seconds = Column(Float)  # > 80%
     raw_data = Column(JSON)
 
     __table_args__ = (UniqueConstraint('start_timestamp', 'workout_type', name='_workout_start_type_uc'),)
