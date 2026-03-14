@@ -31,16 +31,3 @@ This project provides two main endpoints for data ingestion from Health Auto Exp
 ## Webhook Configuration
 
 In Health Auto Export, you can configure dual exports or switch between these based on whether you need deep analysis or visual dashboards.
-
-## Data Format Reference
-
-This project uses **Health Auto Export V2 JSON format**. When modifying data ingestion code, refer to the official documentation:
-
-- [Export Format Overview](https://help.healthyapps.dev/en/health-auto-export/export-format/)
-- [Workout Fields](https://help.healthyapps.dev/en/health-auto-export/export-format/workouts/)
-
-Key conventions in V2:
-- Numeric fields use a `{ "qty": number, "units": string }` wrapper (e.g. `activeEnergyBurned`, heart rate values)
-- `heartRate` is an object with `min`, `avg`, `max` — each a qty/units object
-- `duration` is in **seconds**
-- Dates use format `yyyy-MM-dd HH:mm:ss Z` (e.g. `2024-02-06 14:30:00 -0800`)
